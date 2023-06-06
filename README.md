@@ -12,7 +12,7 @@ Its a music bot that plays music through Youtube using URLs or the name.
 /resume - resumes playing the current song
   
 # Installation
-All you have to do is run 'pip install -r requirements.txt' to install all the dependancies that are needed.
+All you have to do is run `pip install -r requirements.txt` to install all the dependancies that are needed.
   
 # Starting the bot
-Go to the directory where all the files are at and run 'python main.py'
+Go to the directory where all the files are at and run `python main.py`
