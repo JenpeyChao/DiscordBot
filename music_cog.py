@@ -12,7 +12,7 @@ class music_cog(commands.Cog):
         #all the music related stuff
         self.is_playing = False
         self.is_paused = False
-
+        self.current = ""
         # 2d array containing [song, channel]
         self.music_queue = []
         self.YDL_OPTIONS = {'verbose':'True',
@@ -33,16 +33,6 @@ class music_cog(commands.Cog):
 
         self.vc = None
 
-     #searching the item on youtube
-    # def search_yt(self, item):
-    #     try:
-    #         video = YouTube(item, age_restricted=True)
-    #         return {'source': video.streams.first().url, 'title': video.title}
-        
-    #     except Exception as e:
-    #         print(e)
-    #         return False
-
     def search_yt(self, item):
         with YoutubeDL(self.YDL_OPTIONS) as ydl:
             try: 
@@ -50,7 +40,7 @@ class music_cog(commands.Cog):
             except Exception as e: 
                 print(e)
                 return False
-
+        #returns a dictionary that contains the url and title
         return {'source': info['url'], 'title': info['title']}
 
     async def play_next(self,ctx):
@@ -62,6 +52,7 @@ class music_cog(commands.Cog):
 
             #remove the first element as you are currently playing it
             await ctx.send("Playing " + self.music_queue[0][0]['title'])
+            self.current = self.music_queue[0][0]['title']
             self.music_queue.pop(0)
             self.vc.play(discord.FFmpegPCMAudio(m_url, **self.FFMPEG_OPTIONS), after=lambda e: self.play_next(ctx))
         else:
@@ -88,6 +79,7 @@ class music_cog(commands.Cog):
             
             #remove the first element as you are currently playing it
             await ctx.send("Playing " + self.music_queue[0][0]['title'])
+            self.current = self.music_queue[0][0]['title']
             self.music_queue.pop(0)
 
             self.vc.play(discord.FFmpegPCMAudio(m_url,**self.FFMPEG_OPTIONS), after=lambda e: self.play_next(ctx))
@@ -103,6 +95,7 @@ class music_cog(commands.Cog):
             #you need to be connected so that the bot knows where to go
             await ctx.send("Connect to a voice channel!")
         elif self.is_paused:
+            self.is_paused = False
             self.vc.resume()
         else:
             song = self.search_yt(query)
@@ -113,7 +106,6 @@ class music_cog(commands.Cog):
                 self.music_queue.append([song, voice_channel])
                 
                 if self.is_playing == False:
-                    print("true1")
                     await self.play_music(ctx)
 
     @commands.command(name="pause", help="Pauses the current song being played")
@@ -136,11 +128,18 @@ class music_cog(commands.Cog):
 
     @commands.command(name="skip", aliases=["s"], help="Skips the current song being played")
     async def skip(self, ctx):
+        if not self.is_playing and not self.is_paused:
+            await ctx.send("No songs to skip")
         if self.vc != None and self.vc:
             self.vc.stop()
+            self.is_paused = False
+            if self.current != "":
+                await ctx.send("Skipping " + self.current)
+                self.current = ""
             #try to play next in the queue if it exists
+           
             await self.play_music(ctx)
-
+        
 
     @commands.command(name="queue", aliases=["q"], help="Displays the current songs in queue")
     async def queue(self, ctx):

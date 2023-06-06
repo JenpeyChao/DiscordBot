@@ -24,7 +24,6 @@ async def main(bot):
 if __name__ == '__main__':
     intents = discord.Intents.all()
     intents.members = True
-
     bot = commands.Bot(command_prefix='!', intents=intents)
     #remove the default help command so that we can write out own
     bot.remove_command('help')
