@@ -5,7 +5,9 @@ import asyncio
 #import all of the cogs
 from help_cog import help_cog
 from music_cog import music_cog
+import tracemalloc
 
+tracemalloc.start()
 
 
 async def setup(bot):
