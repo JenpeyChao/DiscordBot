@@ -54,7 +54,8 @@ class music_cog(commands.Cog):
             await ctx.send("Playing " + self.music_queue[0][0]['title'])
             self.current = self.music_queue[0][0]['title']
             self.music_queue.pop(0)
-            self.vc.play(discord.FFmpegPCMAudio(m_url, **self.FFMPEG_OPTIONS), after=lambda e: self.play_next(ctx))
+            print(self.current)
+            await self.vc.play(discord.FFmpegPCMAudio(m_url, **self.FFMPEG_OPTIONS), after=lambda e: self.bot.loop.create_task(self.play_next(ctx)))
         else:
             self.is_playing = False
 
@@ -82,7 +83,8 @@ class music_cog(commands.Cog):
             self.current = self.music_queue[0][0]['title']
             self.music_queue.pop(0)
 
-            self.vc.play(discord.FFmpegPCMAudio(m_url,**self.FFMPEG_OPTIONS), after=lambda e: self.play_next(ctx))
+            print(self.current)
+            await self.vc.play(discord.FFmpegPCMAudio(m_url, **self.FFMPEG_OPTIONS), after=lambda e: self.bot.loop.create_task(self.play_next(ctx)))
         else:
             self.is_playing = False
 
